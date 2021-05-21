@@ -1,0 +1,143 @@
+<html>
+<head>
+<title>	print me!</title>
+ <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="https://fonts.xz.style/serve/inter.css">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@exampledev/new.css@1.1.2/new.min.css">
+	<link rel="stylesheet" href="style.css">
+	<link rel="stylesheet" href="https://maxst.icons8.com/vue-static/landings/line-awesome/line-awesome/1.3.0/css/line-awesome.min.css">
+	<script  src="https://code.jquery.com/jquery-3.4.1.min.js"
+  integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+  crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+
+</head>
+
+<body>
+<div id="pppconvert" v-cloak>		
+	<header>
+		<div style="display:flex;align-items:center">
+			<div class="col-md-6">
+				<h1>{{ i18n.imgointoprint }}</h1>
+			</div>
+			<div class="col-md-6">
+				<i class="las la-print la-6x" style="margin-left:1em;color:#00ecb8"></i>
+			</div>
+		</div>
+		<a href="#" @click="lang = 'es'"><span :class="{'bold': lang == 'es'}">ES</span></a> | 
+		<a href="#" @click="lang = 'en'"><span :class="{'bold': lang == 'en'}">EN</span></a>
+	</header>
+
+	<form>
+		<div class="container">
+			<flex-row>
+				<div>
+					<label for="format">{{ i18n.format }}<br></label>
+						<select name="format" id="format" v-model="format">
+							<option value="300" selected>{{ i18n.magazine }}</option>
+							<option value="150">{{ i18n.newspaper }}</option>
+							<option value="72">{{ i18n.homeprinting }}</option>
+							<option value="96">{{ i18n.screen }}</option>
+							<option value="other">{{ i18n.other }}</option>
+						</select>
+				</div>
+				<div style="margin-left:1em">
+					<label for="ppp">{{ i18n.resolution }}<br>
+						<input type="number" id="ppp" v-model="ppp"> ppp
+					</label>
+				</div>
+			</flex-row>
+			<hr>
+			<flex-row>
+				<div>
+						<h2>{{ i18n.mypicturehas }}</h2>
+						<div><label>{{ i18n.width }}<br>
+							<input type="number" id="pxX" name="pxX" v-model="pxx"> px</label>
+						</div>
+						<div><label>{{ i18n.height }}<br>
+							<input type="number" id="pxY" name="pxY" v-model="pxy"> px</label>
+						</div>
+				</div>
+				<div><i class="las la-image la-6x" style="margin-left:1em;color:var(--nc-ac-1)"></i></div>
+			</flex-row>
+			<hr>
+			<flex-row>
+				<div>	
+						<h2>{{ i18n.itrealsizewillbe }}</h2>
+						<div><label for="mmX">
+							<input type="number" id="mmX" v-model="mmx"> cm.
+						</label></div>
+						<div><label for="mmY">
+							<input type="number" id="mmY" v-model="mmy"> cm.
+						</label>
+						</div>
+				</div>
+				<div>
+                    <i class="las la-ruler-combined la-6x" style="margin-left:1em;color:var(--nc-ac-1)"></i>
+                </div>
+			</flex-row>
+		</div>
+	</form>
+</div>
+
+<script>
+
+const app = new Vue({
+	el: '#pppconvert',
+	data: {
+		lang: 'en',
+		i18n: [],
+		format:0,
+		ppp:72,
+		pxx:0,
+		pxy:0,
+		mmx:0,
+		mmy:0
+	},
+	methods: {
+		
+	},
+	watch: {
+		lang: function() {
+			axios.get('i18n/' + this.lang + '.json').then(response => (this.i18n = response.data))
+		},
+		format: function (val) {
+			this.ppp = this.format
+		},
+		pxx: function (val) { //Anchura px
+			this.mmx = (this.pxx*2.54)/this.ppp
+		},
+		pxy: function (val) { //Altura px
+			this.mmy = (this.pxy*2.54)/this.ppp
+		},
+		mmx: function (val) {
+			this.pxx = (this.mmx*this.ppp)/2.54
+		},
+		mmy: function (val) {
+			this.pxy = (this.mmy*this.ppp)/2.54
+		},
+	},
+	mounted() {
+        axios.get('i18n/' + this.lang + '.json').then(response => (this.i18n = response.data))
+	}
+});
+
+//Inputs
+/*var ppp = $('#ppp').val();
+var pxX = $('#pxX').val();
+var pxY = $('#pxY').val();
+var mmX = $('#mmX').val();
+var mmY = $('#mmY').val();
+
+//Outputs
+$('#pppconvert').on('change', function() {
+	$('#mmX').html(pxX*(25.4*ppp^-1));
+	$('#mmY').html(pxY*(25.4*ppp^-1));
+});
+*/
+</script>
+</body>
+</html>

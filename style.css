@@ -1,0 +1,29 @@
+:root {
+	--nc-ac-1: #00ecb8;
+}
+h1,h2,h3 {
+	border-bottom:0;
+}
+input,select,area{
+    background: white;
+	color: var(--nc-tx-2);
+	border: 3px solid var(--nc-bg-3);
+}
+.bold {
+	font-weight: 800;
+}
+header a {
+	text-decoration:none;
+}
+flex-row {
+    display: flex;
+    align-items: center;
+}
+@media (max-width:768px) {
+	flex-row {
+	    display:flex;
+	    flex-flow:column;
+	    justify-content:flex-start;
+	    align-items:flex-start
+	}
+}
