@@ -18,20 +18,22 @@
 
 <body>
 <div id="pppconvert" v-cloak>		
-	<header style="background:url(gutenberg-bg.jpg);background-position:center 20%; background-size:cover;height:300px">
-		<a href="#" @click="lang = 'es'"><span :class="{'bold': lang == 'es'}" style="color:white">ES</span></a> | 
-		<a href="#" @click="lang = 'en'"><span :class="{'bold': lang == 'en'}" style="color:white">EN</span></a>
-		<div style="display: flex;align-items: flex-end;align-self: end;height: 100%;">
+	<header>
+		<div style="display:flex;align-items:center">
 			<div class="col-md-6">
-				<h1 style="color: white;font-size: 3.5em;">{{ i18n.imgointoprint }}</h1>
-				<p style="color: white;font-size: 22px;">{{ i18n.whatresolution }}</p>
+				<h1>{{ i18n.imgointoprint }}</h1>
+			</div>
+			<div class="col-md-6">
+				<i class="las la-print la-6x" style="margin-left:1em;color:#00ecb8"></i>
 			</div>
 		</div>
+		<a href="#" @click="lang = 'es'"><span :class="{'bold': lang == 'es'}">ES</span></a> | 
+		<a href="#" @click="lang = 'en'"><span :class="{'bold': lang == 'en'}">EN</span></a>
 	</header>
 
 	<form>
 		<div class="container">
-			<div class="flex-row">
+			<flex-row>
 				<div>
 					<label for="format">{{ i18n.format }}<br></label>
 						<select name="format" id="format" v-model="format">
@@ -47,10 +49,10 @@
 						<input type="number" id="ppp" v-model="ppp"> ppp
 					</label>
 				</div>
-			</div>
+			</flex-row>
 			<hr>
-			<div class="flex-row">
-				<div id="pxinput">
+			<flex-row>
+				<div>
 						<h2>{{ i18n.mypicturehas }}</h2>
 						<div><label>{{ i18n.width }}<br>
 							<input type="number" id="pxX" name="pxX" v-model="pxx"> px</label>
@@ -58,54 +60,49 @@
 						<div><label>{{ i18n.height }}<br>
 							<input type="number" id="pxY" name="pxY" v-model="pxy"> px</label>
 						</div>
-						<div id="upload"></div>
 				</div>
-				<div id="mminput">
+				<div><i class="las la-image la-6x" style="margin-left:1em;color:var(--nc-ac-1)"></i></div>
+			</flex-row>
+			<hr>
+			<flex-row>
+				<div>	
 						<h2>{{ i18n.itrealsizewillbe }}</h2>
-						<div><label for="mmX">{{ i18n.width }}<br>
+						<div><label for="mmX">
 							<input type="number" id="mmX" v-model="mmx"> cm.
 						</label></div>
-						<div><label for="mmY">{{ i18n.height }}<br>
+						<div><label for="mmY">
 							<input type="number" id="mmY" v-model="mmy"> cm.
 						</label>
 						</div>
+				</div>
 				<div>
                     <i class="las la-ruler-combined la-6x" style="margin-left:1em;color:var(--nc-ac-1)"></i>
                 </div>
-				</div>
-			</div>
+			</flex-row>
 		</div>
 	</form>
 </div>
-
 <footer>
-<hr style="margin-top:2em">
-<p>Coded with <i class="la la-heart" style="color:coral"></i> and Vue.js by <a href="https://pablosanruiz.es">pablosanruiz</a></p>  
+ <p style="text-align:right"><a href="https://pablosanruiz.es">p̄ablosanruiz</a></p>
 </footer>
 
 <script>
 
-let app = new Vue({
+const app = new Vue({
 	el: '#pppconvert',
 	data: {
-		lang: 'es',
+		lang: 'en',
 		i18n: [],
-		format:300,
-		ppp:300,
+		format:0,
+		ppp:72,
 		pxx:0,
 		pxy:0,
 		mmx:0,
-		mmy:0,
-		file: []
+		mmy:0
 	},
 	methods: {
-      uploadFile(e) {
-        this.File = e.target.files;
-      },
-      dragFile(e) {
-        this.File = e.dataTransfer.files;
-      }
-  	},
+		
+	},
 	watch: {
 		lang: function() {
 			axios.get('i18n/' + this.lang + '.json').then(response => (this.i18n = response.data))
@@ -131,38 +128,19 @@ let app = new Vue({
 	}
 });
 
+//Inputs
+/*var ppp = $('#ppp').val();
+var pxX = $('#pxX').val();
+var pxY = $('#pxY').val();
+var mmX = $('#mmX').val();
+var mmY = $('#mmY').val();
 
+//Outputs
+$('#pppconvert').on('change', function() {
+	$('#mmX').html(pxX*(25.4*ppp^-1));
+	$('#mmY').html(pxY*(25.4*ppp^-1));
+});
+*/
 </script>
-
-
-<script>
-  const file = new Vue({
-    data: () => ({ File: [], width:0, height:0,}),
-    template: `
-    <div @dragover.prevent @drop.prevent>
-      <div @drop="dragFile" style="border: 4px dashed rgb(204, 204, 204);border-radius: 10px;padding: 1em;margin-bottom: 1.3em;margin-top: 2em;margin-left: -1em;width: calc(100% - 3em);">
-        Drag and drop your image here<br>
-        <i class="las la-image la-6x" style="color:var(--nc-ac-1)"></i
-        <div v-if="File.length">
-          <ul v-for="file in File" :key="file" class="listed-file">
-            <li>{{file.name}}</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-    `,
-    methods: {
-      uploadFile(e) {
-        this.File = e.target.files;
-      },
-      dragFile(e) {
-        this.File = e.dataTransfer.files;
-        console.log(this.File.width);
-      }
-   }
-  });
-  file.$mount("#upload");
-</script>
-
 </body>
 </html>
