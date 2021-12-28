@@ -18,13 +18,13 @@
 
 <body>
 <div id="pppconvert" v-cloak>		
-	<header style="background:url(gutenberg-bg.jpg);background-position:center 20%; background-size:cover;height:300px">
-		<a href="#" @click="lang = 'es'"><span :class="{'bold': lang == 'es'}" style="color:white">ES</span></a> | 
-		<a href="#" @click="lang = 'en'"><span :class="{'bold': lang == 'en'}" style="color:white">EN</span></a>
-		<div style="display: flex;align-items: flex-end;align-self: end;height: 100%;">
+	<header>
+		<a href="#" @click="lang = 'es'"><span :class="{'bold': lang == 'es'}">ES</span></a> | 
+		<a href="#" @click="lang = 'en'"><span :class="{'bold': lang == 'en'}">EN</span></a>
+		<div >
 			<div class="col-md-6">
-				<h1 style="color: white;font-size: 3.5em;">{{ i18n.imgointoprint }}</h1>
-				<p style="color: white;font-size: 22px;">{{ i18n.whatresolution }}</p>
+				<h1>{{ i18n.imgointoprint }}</h1>
+				<p>{{ i18n.whatresolution }}</p>
 			</div>
 		</div>
 	</header>
@@ -33,53 +33,75 @@
 		<div class="container">
 			<div class="flex-row">
 				<div>
-					<label for="format">{{ i18n.format }}<br></label>
-						<select name="format" id="format" v-model="format">
-							<option value="300" selected>{{ i18n.magazine }}</option>
-							<option value="150">{{ i18n.newspaper }}</option>
-							<option value="72">{{ i18n.homeprinting }}</option>
-							<option value="96">{{ i18n.screen }}</option>
+					<label for="format"><i class="lar la-file"></i> <b>{{ i18n.format }}</b><br></label>
+						<select name="format" id="format" v-model="format" @change="updateppp()">
+							<option value="300" selected>{{ i18n.magazine }} </option>
+							<option value="150">{{ i18n.newspaper }} </option>
+							<option value="72">{{ i18n.homeprinting }} </option>
+							<option value="96">{{ i18n.screen }} </option>
 							<option value="other">{{ i18n.other }}</option>
 						</select>
 				</div>
-				<div style="margin-left:1em">
-					<label for="ppp">{{ i18n.resolution }}<br>
-						<input type="number" id="ppp" v-model="ppp"> ppp
+				<div>
+					<label for="ppp"><i class="las la-eye"></i> <b>{{ i18n.resolution }}</b><br>
+						<input type="number" id="ppp" v-model="ppp" @change="updateformat();calculate()"> ppp
 					</label>
 				</div>
 			</div>
 			<hr>
 			<div class="flex-row">
 				<div id="pxinput">
+					<div>
 						<h2>{{ i18n.mypicturehas }}</h2>
 						<div><label>{{ i18n.width }}<br>
-							<input type="number" id="pxX" name="pxX" v-model="pxx"> px</label>
+							<input type="number" id="pxX" name="pxX" v-model="pxx" @change="calculate()"> px</label>
 						</div>
 						<div><label>{{ i18n.height }}<br>
-							<input type="number" id="pxY" name="pxY" v-model="pxy"> px</label>
+							<input type="number" id="pxY" name="pxY" v-model="pxy" @change="calculate()"> px</label>
 						</div>
 						<div id="upload"></div>
+					</div>
 				</div>
 				<div id="mminput">
+					<div>
 						<h2>{{ i18n.itrealsizewillbe }}</h2>
 						<div><label for="mmX">{{ i18n.width }}<br>
-							<input type="number" id="mmX" v-model="mmx"> cm.
+							<input type="number" id="mmX" v-model="mmx" @change="calculate()"> cm.
 						</label></div>
 						<div><label for="mmY">{{ i18n.height }}<br>
-							<input type="number" id="mmY" v-model="mmy"> cm.
+							<input type="number" id="mmY" v-model="mmy" @change="calculate()"> cm.
 						</label>
 						</div>
-				<div>
-                    <i class="las la-ruler-combined la-6x" style="margin-left:1em;color:var(--nc-ac-1)"></i>
+						<div>
+		                    <i class="las la-ruler-combined la-6x greenish"></i>
+		                </div>
                 </div>
 				</div>
 			</div>
 		</div>
 	</form>
 </div>
+<div id="uploadfiles">
+  <div  @dragover="dragover" @dragleave="dragleave" @drop="drop" class="upload-box">
+    <input type="file" multiple name="fields[assetsFieldHandle][]" id="assetsFieldHandle" @change="onChange" ref="file" accept=".pdf,.jpg,.jpeg,.png" />
+  
+    <label for="assetsFieldHandle">
+      <div>
+        Drag and drop your image here<br>
+        <i class="las la-image la-6x" style="color:var(--nc-ac-1)"></i>
+      </div>
+    </label>
+    <ul v-if="this.filelist.length" v-cloak>
+      <li v-for="file in filelist">
+        ${ file.name }<button type="button" @click="remove(filelist.indexOf(file))" title="Remove file">remove</button>
+      </li>
+    </ul>
+  </div>
+</div>
+
 
 <footer>
-<hr style="margin-top:2em">
+<hr>
 <p>Coded with <i class="la la-heart" style="color:coral"></i> and Vue.js by <a href="https://pablosanruiz.es">pablosanruiz</a></p>  
 </footer>
 
@@ -96,6 +118,7 @@ let app = new Vue({
 		pxy:0,
 		mmx:0,
 		mmy:0,
+		commonppp: ['300','150','96','72'],
 		file: []
 	},
 	methods: {
@@ -104,27 +127,28 @@ let app = new Vue({
       },
       dragFile(e) {
         this.File = e.dataTransfer.files;
+      },
+      updateppp: function(){
+      	this.ppp = this.format
+      },
+      updateformat: function() {	
+      	if (this.commonppp.includes(this.ppp)) {
+      		this.format = this.ppp
+      	} else {
+      		this.format = 'other'
+      	}
+      },
+      calculate: function() {
+      	this.mmx = (this.pxx*2.54)/this.ppp
+      	this.mmy = (this.pxy*2.54)/this.ppp
+      	this.pxx = (this.mmx*this.ppp)/2.54
+      	this.pxy = (this.mmy*this.ppp)/2.54
       }
   	},
 	watch: {
 		lang: function() {
 			axios.get('i18n/' + this.lang + '.json').then(response => (this.i18n = response.data))
-		},
-		format: function (val) {
-			this.ppp = this.format
-		},
-		pxx: function (val) { //Anchura px
-			this.mmx = (this.pxx*2.54)/this.ppp
-		},
-		pxy: function (val) { //Altura px
-			this.mmy = (this.pxy*2.54)/this.ppp
-		},
-		mmx: function (val) {
-			this.pxx = (this.mmx*this.ppp)/2.54
-		},
-		mmy: function (val) {
-			this.pxy = (this.mmy*this.ppp)/2.54
-		},
+		}
 	},
 	mounted() {
         axios.get('i18n/' + this.lang + '.json').then(response => (this.i18n = response.data))
@@ -136,13 +160,13 @@ let app = new Vue({
 
 
 <script>
-  const file = new Vue({
-    data: () => ({ File: [], width:0, height:0,}),
+/*  const file = new Vue({
+    data: () => ({ File: '', width:0, height:0,}),
     template: `
     <div @dragover.prevent @drop.prevent>
-      <div @drop="dragFile" style="border: 4px dashed rgb(204, 204, 204);border-radius: 10px;padding: 1em;margin-bottom: 1.3em;margin-top: 2em;margin-left: -1em;width: calc(100% - 3em);">
+      <div @drop="getMeasures" class="upload-box">
         Drag and drop your image here<br>
-        <i class="las la-image la-6x" style="color:var(--nc-ac-1)"></i
+        <i class="las la-image la-6x" style="color:var(--nc-ac-1)"></i>
         <div v-if="File.length">
           <ul v-for="file in File" :key="file" class="listed-file">
             <li>{{file.name}}</li>
@@ -158,10 +182,69 @@ let app = new Vue({
       dragFile(e) {
         this.File = e.dataTransfer.files;
         console.log(this.File.width);
+      },
+      getMeasures(e) {
+      	this.File = e.dataTransfer.files;
+      	let img = new Image(this.File);
+      	console.log
+    	img.onload = function() {
+        	console.log("Image Width: ", this.width)
+        	console.log("Image Height: ", this.height)
+    	}
+    	//img.src = this.File;
       }
    }
   });
-  file.$mount("#upload");
+  file.$mount("#upload");*/
+  new Vue({
+  el: '#uploadfiles',
+  delimiters: ['${', '}'], // Avoid Twig conflicts
+  data: {
+    filelist: [] // Store our uploaded files
+  },
+  methods: {
+    onChange() {
+      this.filelist = [...this.$refs.file.files];
+      //@todo: try https://stackoverflow.com/questions/12570834/get-file-size-image-width-and-height-before-upload ;)
+
+    },
+    remove(i) {
+      this.filelist.splice(i, 1);
+    },
+    dragover(event) {
+      event.preventDefault();
+      // Add some visual fluff to show the user can drop its files
+      if (!event.currentTarget.classList.contains('bg-green-300')) {
+        event.currentTarget.classList.remove('bg-gray-100');
+        event.currentTarget.classList.add('bg-green-300');
+      }
+    },
+    dragleave(event) {
+      // Clean up
+      event.currentTarget.classList.add('bg-gray-100');
+      event.currentTarget.classList.remove('bg-green-300');
+    },
+    drop(event) {
+      event.preventDefault();
+      this.$refs.file.files = event.dataTransfer.files;
+      this.onChange(); // Trigger the onChange event manually
+      // Clean up
+      event.currentTarget.classList.add('bg-gray-100');
+      event.currentTarget.classList.remove('bg-green-300');
+    },
+    getMeasures(e) {
+      	this.File = e.dataTransfer.files;
+      	let img = new Image(this.File);
+      	console.log
+    	img.onload = function() {
+        	console.log("Image Width: ", this.width)
+        	console.log("Image Height: ", this.height)
+    	}
+    	//img.src = this.File;
+      }
+  }
+});
+
 </script>
 
 </body>

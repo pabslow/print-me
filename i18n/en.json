@@ -11,5 +11,6 @@
 	"newspaper": "Newspaper",
 	"screen": "Display on screen",
 	"homeprinting": "Home printing",
-	"other": "Other"
+	"other": "Other",
+	"dragdropfile": "Drag and drop your image here"
 }
