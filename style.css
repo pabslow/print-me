@@ -166,6 +166,23 @@ span.icon {
 hr {
     margin-top:2em;
 }
+.upload-icon {
+    display: flex;
+    position: absolute;
+    width: auto!important;
+    right: -10px;
+    top: -20px;
+    background: white;
+    border-radius: 50%;
+    align-items: center;
+}
+.upload-icon:hover::before {
+    content:'\f00d';
+    font-family:'Line Awesome Free';
+    font-weight: 800;
+    position:absolute;
+}
+
 
 @media (max-width:768px) {
 	.flex-row {
@@ -185,4 +202,34 @@ hr {
         padding:0;
         transform: rotate(90deg);
         }
+}
+@media (max-width:480px) {
+    body {
+        padding: 1em;
     }
+    #pxinput {
+        margin-left:-.25em;
+    }
+    #uploadfiles {
+        width:auto;
+        margin-right:2em
+    }
+    header h1 {
+        font-size:2.4em;
+    }
+}
+
+
+/* Preview in folio */
+.folio {
+    border: 1px solid #b9b9b9;
+    width: 210px!important;
+    height: 297px;
+    box-shadow: 5px 5px 0 #6e6e6e;
+    margin-top: 1em;
+    padding: 5px;
+}
+
+img.printed-img {
+    max-width: none;
+}

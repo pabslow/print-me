@@ -34,7 +34,7 @@
 			<div class="flex-row">
 				<div>
 					<label for="format"><i class="lar la-file"></i> <b>{{ i18n.format }}</b><br></label>
-						<select name="format" id="format" v-model="format" @change="updateppp();calculatepx();calculatemm();">
+						<select name="format" id="format" v-model="format" @change="updateppp();selectedFile();calculatepx();calculatemm();" :class="{'border-success': format }">
 							<option value="300" selected>{{ i18n.magazine }} </option>
 							<option value="150">{{ i18n.newspaper }} </option>
 							<option value="72">{{ i18n.homeprinting }} </option>
@@ -44,7 +44,7 @@
 				</div>
 				<div>
 					<label for="ppp"><i class="las la-eye"></i> <b>{{ i18n.resolution }}</b><br>
-						<input type="number" id="ppp" v-model="ppp" @change="updateformat();calculatepx();calculatemm();"> ppp
+						<input type="number" id="ppp" v-model="ppp" @change="updateformat();selectedFile();calculatepx();calculatemm();" :class="{'border-success': ppp }"> ppp
 					</label>
 				</div>
 			</div>
@@ -54,15 +54,16 @@
 					<div class="wrapper">
 						<h4>{{ i18n.mypicturehas }}</h4>
 						<div><label>{{ i18n.width }}<br>
-							<input type="number" id="pxX" name="pxX" v-model="pxx" @change="calculatemm()"> px</label>
+							<input type="number" id="pxX" name="pxX" v-model="pxx" @change="calculatemm()" :class="{'border-success': pxx }"> px</label>
 						</div>
 						<div><label>{{ i18n.height }}<br>
-							<input type="number" id="pxY" name="pxY" v-model="pxy" @change="calculatemm()"> px</label>
+							<input type="number" id="pxY" name="pxY" v-model="pxy" @change="calculatemm()" :class="{'border-success': pxy }"> px</label>
 						</div>
 						<div id="uploadfiles" class="wrapper">
               <div @drop="selectedFile">
                 <label for="myFile" class="custom-drop upload-box" :class="{'border-success': imageLoaded}">
-                  <span v-if="!imageLoaded">Drag and drop your image here<br></span>
+                  <div v-if="imageLoaded" class="upload-icon"><i class="las la-check-circle la-3x greenish"></i></div>
+                  <span v-else>Drag and drop your image here<br></span>
                   <i v-if="!imageLoaded" class="las la-image la-6x" style="color:var(--nc-ac-1)"></i>
                   <img v-if="imageLoaded" alt="" :src="image.src">
                   <input type="file" name="myFile" id="myFile" ref="myFile" @change="selectedFile" accept="image/*"/>
@@ -80,15 +81,18 @@
   					<div class="wrapper">
   						<h4>{{ i18n.itrealsizewillbe }}</h4>
   						<div><label for="mmX">{{ i18n.width }}<br>
-  							<input type="number" id="mmX" v-model="mmx" @change="calculatepx()"> cm.
+  							<input type="number" id="mmX" v-model="mmx" @change="calculatepx()" :class="{'border-success': mmx }"> cm.
   						</label></div>
   						<div><label for="mmY">{{ i18n.height }}<br>
-  							<input type="number" id="mmY" v-model="mmy" @change="calculatepx()"> cm.
+  							<input type="number" id="mmY" v-model="mmy" @change="calculatepx()" :class="{'border-success': mmy }"> cm.
   						</label>
   						</div>
-  						<div>
+  						<div v-if="!imageLoaded">
   		            <i class="las la-ruler-combined la-6x greenish"></i>
   		        </div>
+              <div v-else class="folio">
+                <img :src="image.src" alt="" :width="mmx * 10" :height="mmy * 10" class="printed-img">
+              </div>
             </div>
 				</div>
 			</div>
@@ -110,7 +114,7 @@
 
 <footer>
 <hr>
-<p>Coded with <i class="la la-heart" style="color:coral"></i> and Vue.js by <a href="https://pablosanruiz.es">pablosanruiz</a></p>  
+<p>Coded with <i class="la la-heart" style="color:tomato"></i> and Vue.js by <a href="https://pablosanruiz.es">pablosanruiz</a></p>  
 </footer>
 
 <script>
