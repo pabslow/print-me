@@ -1,6 +1,12 @@
 :root {
 	--nc-ac-1: #00ecb8;
 }
+
+body {
+    width:100%;
+    overflow-x:hidden;
+}
+
 h1,h2,h3 {
 	border-bottom:0;
 }
