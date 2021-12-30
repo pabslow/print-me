@@ -34,7 +34,7 @@
 			<div class="flex-row">
 				<div>
 					<label for="format"><i class="lar la-file"></i> <b>{{ i18n.format }}</b><br></label>
-						<select name="format" id="format" v-model="format" @change="updateppp()">
+						<select name="format" id="format" v-model="format" @change="updateppp();calculatepx();calculatemm();">
 							<option value="300" selected>{{ i18n.magazine }} </option>
 							<option value="150">{{ i18n.newspaper }} </option>
 							<option value="72">{{ i18n.homeprinting }} </option>
@@ -44,59 +44,67 @@
 				</div>
 				<div>
 					<label for="ppp"><i class="las la-eye"></i> <b>{{ i18n.resolution }}</b><br>
-						<input type="number" id="ppp" v-model="ppp" @change="updateformat();calculate()"> ppp
+						<input type="number" id="ppp" v-model="ppp" @change="updateformat();calculatepx();calculatemm();"> ppp
 					</label>
 				</div>
 			</div>
 			<hr>
 			<div class="flex-row">
 				<div id="pxinput">
-					<div>
-						<h2>{{ i18n.mypicturehas }}</h2>
+					<div class="wrapper">
+						<h4>{{ i18n.mypicturehas }}</h4>
 						<div><label>{{ i18n.width }}<br>
-							<input type="number" id="pxX" name="pxX" v-model="pxx" @change="calculate()"> px</label>
+							<input type="number" id="pxX" name="pxX" v-model="pxx" @change="calculatemm()"> px</label>
 						</div>
 						<div><label>{{ i18n.height }}<br>
-							<input type="number" id="pxY" name="pxY" v-model="pxy" @change="calculate()"> px</label>
+							<input type="number" id="pxY" name="pxY" v-model="pxy" @change="calculatemm()"> px</label>
 						</div>
-						<div id="upload"></div>
+						<div id="uploadfiles" class="wrapper">
+              <div @drop="selectedFile">
+                <label for="myFile" class="custom-drop upload-box" :class="{'border-success': imageLoaded}">
+                  <span v-if="!imageLoaded">Drag and drop your image here<br></span>
+                  <i v-if="!imageLoaded" class="las la-image la-6x" style="color:var(--nc-ac-1)"></i>
+                  <img v-if="imageLoaded" alt="" :src="image.src">
+                  <input type="file" name="myFile" id="myFile" ref="myFile" @change="selectedFile" accept="image/*"/>
+                </label>
+                <br>
+                </div>
+                 <div v-if="imageLoaded">
+                    Image is: {{image.width}}px &times; {{image.height}}px
+                </div>
+            </div>
 					</div>
 				</div>
+        <div class="arrow w-auto">➽</div>
 				<div id="mminput">
-					<div>
-						<h2>{{ i18n.itrealsizewillbe }}</h2>
-						<div><label for="mmX">{{ i18n.width }}<br>
-							<input type="number" id="mmX" v-model="mmx" @change="calculate()"> cm.
-						</label></div>
-						<div><label for="mmY">{{ i18n.height }}<br>
-							<input type="number" id="mmY" v-model="mmy" @change="calculate()"> cm.
-						</label>
-						</div>
-						<div>
-		                    <i class="las la-ruler-combined la-6x greenish"></i>
-		                </div>
-                </div>
+  					<div class="wrapper">
+  						<h4>{{ i18n.itrealsizewillbe }}</h4>
+  						<div><label for="mmX">{{ i18n.width }}<br>
+  							<input type="number" id="mmX" v-model="mmx" @change="calculatepx()"> cm.
+  						</label></div>
+  						<div><label for="mmY">{{ i18n.height }}<br>
+  							<input type="number" id="mmY" v-model="mmy" @change="calculatepx()"> cm.
+  						</label>
+  						</div>
+  						<div>
+  		            <i class="las la-ruler-combined la-6x greenish"></i>
+  		        </div>
+            </div>
 				</div>
 			</div>
 		</div>
-	</form>
-</div>
-<div id="uploadfiles">
-  <div  @dragover="dragover" @dragleave="dragleave" @drop="drop" class="upload-box">
-    <input type="file" multiple name="fields[assetsFieldHandle][]" id="assetsFieldHandle" @change="onChange" ref="file" accept=".pdf,.jpg,.jpeg,.png" />
-  
-    <label for="assetsFieldHandle">
-      <div>
-        Drag and drop your image here<br>
-        <i class="las la-image la-6x" style="color:var(--nc-ac-1)"></i>
-      </div>
-    </label>
-    <ul v-if="this.filelist.length" v-cloak>
+    
+
+      
+    <!-- <ul v-if="this.filelist.length" v-cloak>
       <li v-for="file in filelist">
         ${ file.name }<button type="button" @click="remove(filelist.indexOf(file))" title="Remove file">remove</button>
       </li>
-    </ul>
+    </ul> -->
   </div>
+	</form>
+</div>
+
 </div>
 
 
@@ -119,15 +127,16 @@ let app = new Vue({
 		mmx:0,
 		mmy:0,
 		commonppp: ['300','150','96','72'],
-		file: []
+    image:{
+      src:'',
+      size:'',
+      height:'',
+      width:''
+    },
+    imageLoaded:false,
+    filelist: []
 	},
 	methods: {
-      uploadFile(e) {
-        this.File = e.target.files;
-      },
-      dragFile(e) {
-        this.File = e.dataTransfer.files;
-      },
       updateppp: function(){
       	this.ppp = this.format
       },
@@ -138,114 +147,65 @@ let app = new Vue({
       		this.format = 'other'
       	}
       },
-      calculate: function() {
+      calculatemm: function() {
       	this.mmx = (this.pxx*2.54)/this.ppp
-      	this.mmy = (this.pxy*2.54)/this.ppp
-      	this.pxx = (this.mmx*this.ppp)/2.54
-      	this.pxy = (this.mmy*this.ppp)/2.54
-      }
+        this.mmx = Number((this.mmx).toFixed(2)); //redondeamos
+      	this.mmy = (this.pxy*2.54)/this.ppp 	
+        this.mmy = Number((this.mmy).toFixed(2)); //redondeamos
+      },
+      calculatepx: function() {
+        this.pxx = (this.mmx*this.ppp)/2.54
+        this.pxx = Number((this.pxx).toFixed(2)); //redondeamos
+        this.pxy = (this.mmy*this.ppp)/2.54
+        this.pxy = Number((this.pxy).toFixed(2)); //redondeamos
+      },
+      selectedFile: function() {
+        this.imageLoaded = false;
+        
+        let file = this.$refs.myFile.files[0];
+        if(!file || file.type.indexOf('image/') !== 0) return;
+        
+        this.image.size = file.size;
+        
+        let reader = new FileReader();
+        
+        reader.readAsDataURL(file);
+        reader.onload = evt => {
+          let img = new Image();
+          //console.log(img);
+
+          img.onload = () => {
+            this.image.src = img.src;
+            this.image.width = img.width;
+            this.image.height = img.height;
+            this.pxx = img.width;
+            this.pxy = img.height;
+            this.calculatemm();
+            this.imageLoaded = true;
+          }
+          img.src = evt.target.result;
+          //this.image.src = img.src;
+          //console.log(img.src);
+        }
+        reader.onerror = evt => {
+          console.error(evt);
+        }   
+      },
+      
   	},
 	watch: {
 		lang: function() {
-			axios.get('i18n/' + this.lang + '.json').then(response => (this.i18n = response.data))
-		}
-	},
+		  axios.get('i18n/' + this.lang + '.json').then(response => (this.i18n = response.data))
+    }
+	 },
 	mounted() {
-        axios.get('i18n/' + this.lang + '.json').then(response => (this.i18n = response.data))
+        axios.get('i18n/' + this.lang + '.json').then(response => (this.i18n = response.data));
 	}
-});
 
-
-</script>
-
-
-<script>
-/*  const file = new Vue({
-    data: () => ({ File: '', width:0, height:0,}),
-    template: `
-    <div @dragover.prevent @drop.prevent>
-      <div @drop="getMeasures" class="upload-box">
-        Drag and drop your image here<br>
-        <i class="las la-image la-6x" style="color:var(--nc-ac-1)"></i>
-        <div v-if="File.length">
-          <ul v-for="file in File" :key="file" class="listed-file">
-            <li>{{file.name}}</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-    `,
-    methods: {
-      uploadFile(e) {
-        this.File = e.target.files;
-      },
-      dragFile(e) {
-        this.File = e.dataTransfer.files;
-        console.log(this.File.width);
-      },
-      getMeasures(e) {
-      	this.File = e.dataTransfer.files;
-      	let img = new Image(this.File);
-      	console.log
-    	img.onload = function() {
-        	console.log("Image Width: ", this.width)
-        	console.log("Image Height: ", this.height)
-    	}
-    	//img.src = this.File;
-      }
-   }
-  });
-  file.$mount("#upload");*/
-  new Vue({
-  el: '#uploadfiles',
-  delimiters: ['${', '}'], // Avoid Twig conflicts
-  data: {
-    filelist: [] // Store our uploaded files
-  },
-  methods: {
-    onChange() {
-      this.filelist = [...this.$refs.file.files];
-      //@todo: try https://stackoverflow.com/questions/12570834/get-file-size-image-width-and-height-before-upload ;)
-
-    },
-    remove(i) {
-      this.filelist.splice(i, 1);
-    },
-    dragover(event) {
-      event.preventDefault();
-      // Add some visual fluff to show the user can drop its files
-      if (!event.currentTarget.classList.contains('bg-green-300')) {
-        event.currentTarget.classList.remove('bg-gray-100');
-        event.currentTarget.classList.add('bg-green-300');
-      }
-    },
-    dragleave(event) {
-      // Clean up
-      event.currentTarget.classList.add('bg-gray-100');
-      event.currentTarget.classList.remove('bg-green-300');
-    },
-    drop(event) {
-      event.preventDefault();
-      this.$refs.file.files = event.dataTransfer.files;
-      this.onChange(); // Trigger the onChange event manually
-      // Clean up
-      event.currentTarget.classList.add('bg-gray-100');
-      event.currentTarget.classList.remove('bg-green-300');
-    },
-    getMeasures(e) {
-      	this.File = e.dataTransfer.files;
-      	let img = new Image(this.File);
-      	console.log
-    	img.onload = function() {
-        	console.log("Image Width: ", this.width)
-        	console.log("Image Height: ", this.height)
-    	}
-    	//img.src = this.File;
-      }
-  }
 });
 
 </script>
+
 
 </body>
 </html>
