@@ -3,6 +3,8 @@
 	"resolution": "Resolution",
 	"imgointoprint": "Print calculator",
 	"format": "Format",
+	"ppp": "dpi",
+	"dotsperinch": "dots per inch",
 	"mypicturehas": "My picture has",
 	"width": "Width",
 	"height": "Height",
