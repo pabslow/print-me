@@ -2,11 +2,6 @@
 	--nc-ac-1: #00ecb8;
 }
 
-html {
-    width: 100%;
-    overflow-x: hidden;
-}
-
 h1,h2,h3 {
 	border-bottom:0;
 }
@@ -208,6 +203,10 @@ hr {
         padding:0;
         transform: rotate(90deg);
         }
+	html {
+    	width: 100%;
+   		overflow-x: hidden;
+	}
 }
 @media (max-width:480px) {
     body {
