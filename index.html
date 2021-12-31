@@ -1,9 +1,15 @@
 <html>
 <head>
 <title>Printing calculator</title>
- <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="icon" type="image/x-icon" href="favicon.png">
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta property="og:url" content="https://pabspabs.github.io/print-me"/>  
+	<meta property="og:title" content="Printing calculator" />  
+	<meta property="og:site_name" content="Printing calculator" />  
+	<meta property="og:description" content="Convert pixels to centimeters acording to resolution, so you can get the exact size your image needs to be printed. Coded with Vue.js" />  
+	<meta property="og:type" content="website" />  
+	<meta property="og:image" content="https://pabspabs.github.io/print-me/gutenberg-bg.jpg" />
+        <link rel="icon" type="image/x-icon" href="favicon.png">
 	<link rel="stylesheet" href="https://fonts.xz.style/serve/inter.css">
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@exampledev/new.css@1.1.2/new.min.css">
 	<link rel="stylesheet" href="style.css">
@@ -45,7 +51,7 @@
 				</div>
 				<div>
 					<label for="ppp"><i class="las la-eye"></i> <b>{{ i18n.resolution }}</b><br>
-						<input type="number" id="ppp" v-model="ppp" @change="updateformat();selectedFile();calculatepx();calculatemm();" :class="{'border-success': ppp }"> {{ i18n.ppp }} <small>*{{ i18n.dotsperinch }}</small>
+						<input type="number" id="ppp" v-model="ppp" @change="updateformat();selectedFile();calculatepx();calculatemm();" :class="{'border-success': ppp }"> {{ i18n.ppp }} <br><small>*{{ i18n.dotsperinch }}</small>
 					</label>
 				</div>
 			</div>

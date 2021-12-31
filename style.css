@@ -2,18 +2,15 @@
 	--nc-ac-1: #00ecb8;
 }
 
-html {
-    width: 100%;
-    overflow-x: hidden;
-}
-
 h1,h2,h3 {
 	border-bottom:0;
 }
 input,select,area{
     background: white;
-	color: var(--nc-tx-2);
-	border: 3px solid #ccc;
+    color: var(--nc-tx-2);
+    border: 3px solid #ccc;
+    height:40px;
+	
 }
 select {
     width:100%;
@@ -208,6 +205,10 @@ hr {
         padding:0;
         transform: rotate(90deg);
         }
+	html {
+    	width: 100%;
+   		overflow-x: hidden;
+	}
 }
 @media (max-width:480px) {
     body {
