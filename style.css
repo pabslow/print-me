@@ -7,8 +7,10 @@ h1,h2,h3 {
 }
 input,select,area{
     background: white;
-	color: var(--nc-tx-2);
-	border: 3px solid #ccc;
+    color: var(--nc-tx-2);
+    border: 3px solid #ccc;
+    height:40px;
+	
 }
 select {
     width:100%;
