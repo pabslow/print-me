@@ -45,7 +45,7 @@
 				</div>
 				<div>
 					<label for="ppp"><i class="las la-eye"></i> <b>{{ i18n.resolution }}</b><br>
-						<input type="number" id="ppp" v-model="ppp" @change="updateformat();selectedFile();calculatepx();calculatemm();" :class="{'border-success': ppp }"> {{ i18n.ppp }} <small>*{{ i18n.dotsperinch }}</small>
+						<input type="number" id="ppp" v-model="ppp" @change="updateformat();selectedFile();calculatepx();calculatemm();" :class="{'border-success': ppp }"> {{ i18n.ppp }} <br><small>*{{ i18n.dotsperinch }}</small>
 					</label>
 				</div>
 			</div>
