@@ -27,7 +27,7 @@ header {
     z-index: 0;
 }
 
-header::after {
+/*header::after {
     content: '';
     background: url(math.png) center center / cover;
     position: absolute;
@@ -38,7 +38,7 @@ header::after {
     filter: invert(1);
     opacity: .4;
     z-index: -1;
-}
+}*/
 
 header a {
     color:white;
